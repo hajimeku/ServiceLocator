@@ -3,7 +3,7 @@
   <component name="ContentModelUserStore">
     <attachedFolders />
     <explicitIncludes>
-      <Path>Assets/ServiceLocator</Path>
+      <Path>Assets/Packages/ServiceLocator</Path>
       <Path>Library/PackageCache/com.littlebigfun.addressable-importer@0.5.0</Path>
       <Path>Library/PackageCache/com.unity.addressables@1.1.5</Path>
       <Path>Library/PackageCache/com.unity.collab-proxy@1.2.16</Path>

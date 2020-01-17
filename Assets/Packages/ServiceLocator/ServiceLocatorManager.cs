@@ -18,7 +18,8 @@ public static class ServiceLocatorManager
         Type type = typeof(T);
         if (!Services.ContainsKey(type))
         {
-            ServiceLocatorErrorLog("Cant find Service of type: " + nameof(type));
+            ServiceLocatorErrorLog("Cant find Service of type: " + type.Name);
+            return default;
         }
 
         return (T)Services[type];
@@ -28,9 +29,9 @@ public static class ServiceLocatorManager
     {
         foreach (KeyValuePair<Type,object> keyValuePair in Services)
         {
-            if (keyValuePair.Value is MonoBehaviour)
+            if (keyValuePair.Value is MonoBehaviour behaviour)
             {
-                Object.Destroy(((MonoBehaviour)keyValuePair.Value).gameObject);
+                Object.Destroy(behaviour.gameObject);
             }
         }
         Services.Clear();

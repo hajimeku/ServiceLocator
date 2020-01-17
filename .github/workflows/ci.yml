@@ -37,4 +37,4 @@ jobs:
           echo '### force overwrite remote upm branch'
           git push -f -u origin upm
         env:
-          PKG_ROOT: Assets/ServiceLocator
+          PKG_ROOT: Assets/Packages/ServiceLocator
