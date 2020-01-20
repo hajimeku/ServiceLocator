@@ -23,7 +23,7 @@ namespace Tests
         [Test]
         public void CreateNonMonoServiceDeleteItAndResolveIt()
         {
-            Debug.logger.logEnabled = false;
+            Debug.unityLogger.logEnabled = false;
             ServiceLocatorManager.Register<IMockInterface>(new MockServiceOldFeature());
 
             ServiceLocatorManager.Reset();
@@ -44,7 +44,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator CreateMonoServiceResetItAndResolveIt()
         {
-            Debug.logger.logEnabled = false;
+            Debug.unityLogger.logEnabled = false;
 
             ServiceLocatorManager.Register<IMockInterface>(ServiceLocatorManager.AsMono<MonoMockServiceFeature>());
             
@@ -60,7 +60,7 @@ namespace Tests
         [UnitySetUp]
         public IEnumerator AfterEachTest()
         {
-            Debug.logger.logEnabled = true;
+            Debug.unityLogger.logEnabled = true;
             yield break;
         }
     }
