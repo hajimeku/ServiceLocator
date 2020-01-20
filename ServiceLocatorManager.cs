@@ -47,7 +47,10 @@ public static class ServiceLocatorManager
     {
         GameObject gameObject = new GameObject(typeof(T).Name);
         var obj = gameObject.AddComponent(typeof(T));
-        Object.DontDestroyOnLoad(gameObject);
+        if (!destroyOnLoad)
+        {
+            Object.DontDestroyOnLoad(gameObject);
+        }
         return obj;
     }
 }
