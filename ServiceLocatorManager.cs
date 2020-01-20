@@ -42,11 +42,12 @@ public static class ServiceLocatorManager
         string logMsg = string.Concat("ServiceLocator - ", log);
         Debug.LogError(logMsg);
     }
-    
-    public static Component AsMono<T>()
+
+    public static Component AsMono<T>(bool destroyOnLoad = false)
     {
         GameObject gameObject = new GameObject(typeof(T).Name);
         var obj = gameObject.AddComponent(typeof(T));
+        Object.DontDestroyOnLoad(gameObject);
         return obj;
     }
 }
