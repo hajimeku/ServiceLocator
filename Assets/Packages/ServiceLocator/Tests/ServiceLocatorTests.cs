@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
@@ -11,6 +11,8 @@ namespace Tests
 {
     public class ServiceLocatorTests
     {
+        private MonoMockServiceFeature _mockMonoService;
+
         [Test]
         public void CreateNonMonoServiceAndResolveIt()
         {
@@ -35,7 +37,7 @@ namespace Tests
         [Test]
         public void CreateMonoServiceAndResolveIt()
         {
-            ServiceLocatorManager.Register<IMockInterface>(ServiceLocatorManager.AsMono<MonoMockServiceFeature>());
+            ServiceLocatorManager.Register<IMockInterface>(_mockMonoService);
             
             IMockInterface service = ServiceLocatorManager.Resolve<IMockInterface>();
             Assert.IsInstanceOf(typeof(MonoMockServiceFeature), service);
@@ -44,22 +46,29 @@ namespace Tests
         [UnityTest]
         public IEnumerator CreateMonoServiceResetItAndResolveIt()
         {
-            Debug.unityLogger.logEnabled = false;
-
-            ServiceLocatorManager.Register<IMockInterface>(ServiceLocatorManager.AsMono<MonoMockServiceFeature>());
             
+            ServiceLocatorManager.Register<IMockInterface>(_mockMonoService);
             ServiceLocatorManager.Reset();
 
             IMockInterface service = ServiceLocatorManager.Resolve<IMockInterface>();
             Assert.IsNull(service);
-            yield return new WaitForEndOfFrame();
-            var obj = Object.FindObjectOfType<MonoMockServiceFeature>();
-            Assert.IsNull(obj);
+            yield return null;
+            Assert.IsTrue(_mockMonoService == null);
         }
 
         [UnitySetUp]
+        public IEnumerator BeforeEachTest()
+        {
+            Debug.unityLogger.logEnabled = false;
+            _mockMonoService = ServiceLocatorManager.AsMono<MonoMockServiceFeature>();
+            yield break;
+        }
+
+        [UnityTearDown]
         public IEnumerator AfterEachTest()
         {
+            ServiceLocatorManager.Reset();
+            if (_mockMonoService) Object.Destroy(_mockMonoService);
             Debug.unityLogger.logEnabled = true;
             yield break;
         }
