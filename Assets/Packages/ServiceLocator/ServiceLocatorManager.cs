@@ -45,10 +45,10 @@ public static class ServiceLocatorManager
         Debug.LogError(logMsg);
     }
 
-    public static Component AsMono<T>(bool destroyOnLoad = false)
+    public static T AsMono<T>(bool destroyOnLoad = false) where T : Component
     {
         GameObject gameObject = new GameObject(typeof(T).Name);
-        var obj = gameObject.AddComponent(typeof(T));
+        var obj = gameObject.AddComponent<T>();
         if (!destroyOnLoad)
         {
             Object.DontDestroyOnLoad(gameObject);
