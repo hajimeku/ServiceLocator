@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,13 +16,15 @@ public static class ServiceLocatorManager
     public static T Resolve<T>()
     {
         Type type = typeof(T);
-        if (!Services.ContainsKey(type))
+        if (Services.TryGetValue(type, out var result))
+        {
+            return (T) result;
+        }
+        else
         {
             ServiceLocatorErrorLog("Cant find Service of type: " + type.Name);
             return default;
         }
-
-        return (T)Services[type];
     }
 
     public static void Reset()
