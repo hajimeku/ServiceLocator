@@ -17,13 +17,12 @@ namespace ServiceLocator
         public T Resolve<T>()
         {
             Type type = typeof(T);
-            if (!Services.ContainsKey(type))
+            if (Services.TryGetValue(type, out var result))
             {
-                ServiceLocatorErrorLog("Cant find Service of type: " + type.Name);
-                return default;
+                return (T) result;
             }
-
-            return (T)Services[type];
+            ServiceLocatorErrorLog("Cant find Service of type: " + type.Name);
+            return default;
         }
 
         public void Reset()
