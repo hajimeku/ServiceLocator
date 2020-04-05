@@ -1,56 +1,65 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-public static class ServiceLocatorManager
+namespace ServiceLocator
 {
-    private static readonly Dictionary<Type, object> Services = new Dictionary<Type, object>();
+    public class ServiceLocatorManager
+    {
+        private readonly Dictionary<Type, object> Services = new Dictionary<Type, object>();
     
-    public static void Register<T>(object serviceInstance)
-    {
-        Services[typeof(T)] = serviceInstance;
-    }
-
-    public static T Resolve<T>()
-    {
-        Type type = typeof(T);
-        if (!Services.ContainsKey(type))
+        public void Register<T>(object serviceInstance)
         {
-            ServiceLocatorErrorLog("Cant find Service of type: " + type.Name);
-            return default;
+            Services[typeof(T)] = serviceInstance;
         }
 
-        return (T)Services[type];
-    }
-
-    public static void Reset()
-    {
-        foreach (KeyValuePair<Type,object> keyValuePair in Services)
+        public T Resolve<T>()
         {
-            if (keyValuePair.Value is MonoBehaviour behaviour)
+            Type type = typeof(T);
+            if (!Services.ContainsKey(type))
             {
-                Object.Destroy(behaviour.gameObject);
+                ServiceLocatorErrorLog("Cant find Service of type: " + type.Name);
+                return default;
             }
+
+            return (T)Services[type];
         }
-        Services.Clear();
-    }
 
-    public static void ServiceLocatorErrorLog(string log)
-    {
-        string logMsg = string.Concat("ServiceLocator - ", log);
-        Debug.LogError(logMsg);
-    }
-
-    public static Component AsMono<T>(bool destroyOnLoad = false)
-    {
-        GameObject gameObject = new GameObject(typeof(T).Name);
-        var obj = gameObject.AddComponent(typeof(T));
-        if (!destroyOnLoad)
+        public void Reset()
         {
-            Object.DontDestroyOnLoad(gameObject);
+            foreach (KeyValuePair<Type,object> keyValuePair in Services)
+            {
+                if (keyValuePair.Value is MonoBehaviour behaviour)
+                {
+                    Object.DestroyImmediate(behaviour.gameObject);
+                }
+            }
+            Services.Clear();
         }
-        return obj;
+
+        private void ServiceLocatorErrorLog(string log)
+        {
+            string logMsg = string.Concat("ServiceLocator - ", log);
+            Debug.LogError(logMsg);
+        }
+
+        public static Component AsMono<T>(bool destroyOnLoad = false)
+        {
+            GameObject gameObject = new GameObject(typeof(T).Name);
+            var obj = gameObject.AddComponent(typeof(T));
+            if (!destroyOnLoad)
+            {
+                Object.DontDestroyOnLoad(gameObject);
+            }
+            return obj;
+        }
+
+        public static void Initialize()
+        {
+            Instance = new ServiceLocatorManager();
+        }
+
+        public static ServiceLocatorManager Instance;
     }
 }
