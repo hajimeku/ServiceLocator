@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
-using ServiceLocator;
+using Packages.ServiceLocator;
 using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.TestTools;
