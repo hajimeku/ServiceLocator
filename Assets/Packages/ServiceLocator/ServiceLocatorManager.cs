@@ -3,21 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ServiceLocator
+namespace Packages.ServiceLocator
 {
     public class ServiceLocatorManager
     {
-        private readonly Dictionary<Type, object> Services = new Dictionary<Type, object>();
-    
+        private readonly Dictionary<Type, object> services = new Dictionary<Type, object>();
+        private static ServiceLocatorManager instance;
+
         public void Register<T>(object serviceInstance)
         {
-            Services[typeof(T)] = serviceInstance;
+            services[typeof(T)] = serviceInstance;
         }
 
         public T Resolve<T>()
         {
             Type type = typeof(T);
-            if (Services.TryGetValue(type, out var result))
+            if (services.TryGetValue(type, out var result))
             {
                 return (T) result;
             }
@@ -27,14 +28,14 @@ namespace ServiceLocator
 
         public void Reset()
         {
-            foreach (KeyValuePair<Type,object> keyValuePair in Services)
+            foreach (KeyValuePair<Type,object> keyValuePair in services)
             {
                 if (keyValuePair.Value is MonoBehaviour behaviour)
                 {
                     Object.DestroyImmediate(behaviour.gameObject);
                 }
             }
-            Services.Clear();
+            services.Clear();
         }
 
         private void ServiceLocatorErrorLog(string log)
@@ -54,11 +55,10 @@ namespace ServiceLocator
             return obj;
         }
 
-        public static void Initialize()
+        public static ServiceLocatorManager Instance
         {
-            Instance = new ServiceLocatorManager();
+            get => instance ?? (instance = new ServiceLocatorManager());
+            set => instance = value;
         }
-
-        public static ServiceLocatorManager Instance;
     }
 }

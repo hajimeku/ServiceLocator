@@ -27,3 +27,40 @@ For previous Unity versions, add the following line to the project *manifest.jso
             "com.apollo.servicelocator": "https://github.com/hajimeku/ServiceLocator.git"
         }
     }
+
+## Summary
+This is a very lightweight Service Locator Pattern library that is intended to help facilitate structure and support for Unit Testing without the need of heavy libraries such as DI.
+
+## Functions
+You can register a service like this:
+```c#
+//For Regular Classes
+ServiceLocatorManager.Instance.Register<IExampleRegularClass>(new ExampleRegularClass());
+//For Monobehaviour classes        
+ServiceLocatorManager.Instance.Register<IExampleMonobehaviourClass>(ServiceLocatorManager.AsMono<ExampleMonobehaviourClass>());
+```
+
+To fetch a service you can request it like this:
+```c#
+private IExampleRegularClass regularClass => ServiceLocatorManager.Instance.Resolve<IExampleRegularClass>();
+private IExampleMonobehaviourClass monobehaviourClass => ServiceLocatorManager.Instance.Resolve<IExampleMonobehaviourClass>();
+```
+
+Example Bootstrap Class. Make sure to create one of these and register your services on a static function marked like ConfigureServices
+```c#
+public static class ExampleBootstrap
+{
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+    public static void ConfigureServices()
+    {
+        //Register this for debug log
+        ServiceLocatorManager.Instance.Register<IExampleLog>(new ExampleProductionLog());
+        
+        //Register this for a Debug log
+        //ServiceLocatorManager.Instance.Register<IExampleLog>(new ExampleDebugLog());
+    }
+}
+```
+
+
+
