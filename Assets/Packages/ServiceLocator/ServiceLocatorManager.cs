@@ -10,9 +10,34 @@ namespace Packages.ServiceLocator
         private readonly Dictionary<Type, object> services = new Dictionary<Type, object>();
         private static ServiceLocatorManager instance;
 
+        public ServiceLocatorManager()
+        {
+            RegisterDefaultLogger();
+        }
+
+        private IServiceLocatorManagerLogger Logger
+        {
+            get
+            {
+                if (services.TryGetValue(typeof(IServiceLocatorManagerLogger), out var loggerObject))
+                {
+                    return loggerObject as IServiceLocatorManagerLogger;
+                }
+
+                return default;
+            }
+        }
+
+        private void RegisterDefaultLogger()
+        {
+            Register<IServiceLocatorManagerLogger>(new ServiceLocatorDefaultLogger());
+        }
+
         public void Register<T>(object serviceInstance)
         {
             services[typeof(T)] = serviceInstance;
+            
+            Logger?.Log(ServiceLocatorManagerLogArgs.Registered(this, typeof(T), serviceInstance));
         }
 
         public T Resolve<T>()
@@ -22,12 +47,15 @@ namespace Packages.ServiceLocator
             {
                 return (T) result;
             }
-            ServiceLocatorErrorLog("Cant find Service of type: " + type.Name);
+            
+            Logger?.Log(ServiceLocatorManagerLogArgs.Missing(this, type));
+
             return default;
         }
 
         public void Reset()
         {
+            Logger?.Log(ServiceLocatorManagerLogArgs.Resetting(this));
             foreach (KeyValuePair<Type,object> keyValuePair in services)
             {
                 if (keyValuePair.Value is MonoBehaviour behaviour)
@@ -36,14 +64,9 @@ namespace Packages.ServiceLocator
                 }
             }
             services.Clear();
+            RegisterDefaultLogger();
         }
-
-        private void ServiceLocatorErrorLog(string log)
-        {
-            string logMsg = string.Concat("ServiceLocator - ", log);
-            Debug.LogError(logMsg);
-        }
-
+        
         public static T AsMono<T>(bool destroyOnLoad = false) where T : Component
         {
             GameObject gameObject = new GameObject(typeof(T).Name);

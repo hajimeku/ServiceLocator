@@ -65,6 +65,74 @@ namespace Tests
             
         }
 
+        [Test]
+        public void DefaultErrorLog()
+        {
+            LogAssert.Expect(LogType.Error, "ServiceLocator - Cant find Service of type: " + nameof(IMockInterface));
+            var test = serviceLocatorManager.Resolve<IMockInterface>();
+            LogAssert.NoUnexpectedReceived();
+            Assert.IsNull(test);
+        }
+        
+        [Test]
+        public void NullLoggerService()
+        {
+            serviceLocatorManager.Register<IServiceLocatorManagerLogger>(null);
+            Assert.IsNull(serviceLocatorManager.Resolve<IServiceLocatorManagerLogger>());
+            var test = serviceLocatorManager.Resolve<IMockInterface>();
+            Assert.IsNull(test);
+            serviceLocatorManager.Register<IMockInterface>(new MockServiceNewFeature());
+            serviceLocatorManager.Reset();
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [Test]
+        public void MockLogger()
+        {
+            LogAssert.Expect(LogType.Log, ServiceManagerLogType.Registered.ToString());
+            LogAssert.Expect(LogType.Log, ServiceManagerLogType.Missing.ToString());
+            serviceLocatorManager.Register<IServiceLocatorManagerLogger>(new MockLogger());
+            var test = serviceLocatorManager.Resolve<IMockInterface>();
+            Assert.IsNull(test);
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [Test]
+        public void LogIsDefaultLoggerAfterReset()
+        {
+            LogAssert.Expect(LogType.Log, ServiceManagerLogType.Registered.ToString());
+            LogAssert.Expect(LogType.Log, ServiceManagerLogType.Resetting.ToString());
+            serviceLocatorManager.Register<IServiceLocatorManagerLogger>(new MockLogger());
+            serviceLocatorManager.Reset();
+            LogAssert.Expect(LogType.Error, "ServiceLocator - Cant find Service of type: " + nameof(IMockInterface));
+            var test = serviceLocatorManager.Resolve<IMockInterface>();
+            LogAssert.NoUnexpectedReceived();
+            Assert.IsNull(test);
+        }
+        
+        [Test]
+        public void LogRegisterEvent()
+        {
+            //expect register to be logged twice. Once for the new logger and once for the mock interface.
+            LogAssert.Expect(LogType.Log, ServiceManagerLogType.Registered.ToString());
+            LogAssert.Expect(LogType.Log, ServiceManagerLogType.Registered.ToString());
+            serviceLocatorManager.Register<IServiceLocatorManagerLogger>(new MockLogger());
+            serviceLocatorManager.Register<IMockInterface>(new MockServiceNewFeature());
+            var test = serviceLocatorManager.Resolve<IMockInterface>();
+            LogAssert.NoUnexpectedReceived();
+            Assert.IsNotNull(test);
+        }
+        
+        [Test]
+        public void LogResettingEvent()
+        {
+            LogAssert.Expect(LogType.Log, ServiceManagerLogType.Registered.ToString());
+            serviceLocatorManager.Register<IServiceLocatorManagerLogger>(new MockLogger());
+            LogAssert.Expect(LogType.Log, ServiceManagerLogType.Resetting.ToString());
+            serviceLocatorManager.Reset();
+            LogAssert.NoUnexpectedReceived();
+        }
+
         [UnityTearDown]
         public IEnumerator AfterEachTest()
         {
