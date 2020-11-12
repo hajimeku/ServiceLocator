@@ -1,7 +1,7 @@
 {
 	"name": "com.apollo.servicelocator",
 	"displayName":"Service Locator Utility",
-	"version": "1.2.0",
+	"version": "1.2.1",
     "unity": "2018.2",
     "keywords": ["locator", "singleton", "resolver"],
     "category": "utils",
