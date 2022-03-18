@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using NUnit.Framework;
 using Packages.ServiceLocator;
-using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
@@ -50,6 +47,22 @@ namespace Tests
             Assert.IsInstanceOf(typeof(MonoMockServiceFeature), service);
         }
         
+        [Test]
+        public void CreateMonoServiceAndCheckIfExists()
+        {
+            serviceLocatorManager.Register<IMockInterface>(ServiceLocatorManager.AsMono<MonoMockServiceFeature>());
+            var serviceExists = serviceLocatorManager.ServiceExists<IMockInterface>();
+            Assert.IsTrue(serviceExists);
+        }
+        
+        [Test]
+        public void CreateNonMonoServiceAndCheckIfExists()
+        {
+            serviceLocatorManager.Register<IMockInterface>(new MockServiceOldFeature());
+            var serviceExists = serviceLocatorManager.ServiceExists<IMockInterface>();
+            Assert.IsTrue(serviceExists);
+        }
+
         [Test]
         public void CreateMonoServiceResetItAndResolveIt()
         {

@@ -78,9 +78,15 @@ namespace Packages.ServiceLocator
             return obj;
         }
 
+        public bool ServiceExists<T>()
+        {
+            services.TryGetValue(typeof(T), out var result);
+            return result != null;
+        }
+
         public static ServiceLocatorManager Instance
         {
-            get => instance ?? (instance = new ServiceLocatorManager());
+            get => instance ??= new ServiceLocatorManager();
             set => instance = value;
         }
     }
