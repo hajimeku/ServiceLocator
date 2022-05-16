@@ -47,7 +47,7 @@ namespace Packages.ServiceLocator
                 return;
             }
 
-            Transform parent = serviceInstance.Parent ? serviceInstance.Parent : null;
+            Transform parent = serviceInstance.Parent;
             
             GameObject objectToInstantiate = Object.Instantiate(serviceInstance.ObjectToInstantiate, parent);
             
