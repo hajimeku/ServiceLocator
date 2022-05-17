@@ -62,6 +62,45 @@ namespace Tests
             var serviceExists = serviceLocatorManager.ServiceExists<IMockInterface>();
             Assert.IsTrue(serviceExists);
         }
+        
+        [Test]
+        public void UseAlreadySetupPrefabs()
+        {
+            var serviceLocatorPrefab = new ServiceLocatorPrefab();
+            
+            var testPrefab = new GameObject("TestGameObject");
+            var alreadyAssignedInPrefab = new GameObject("GameObjectAssigned to Prefab in Editor");
+            var component = testPrefab.AddComponent<MockServiceLocatorPrefab>();
+            component.AlreadyAssignedInPrefab = alreadyAssignedInPrefab;
+
+            serviceLocatorPrefab.ObjectToInstantiate = testPrefab;
+            
+            serviceLocatorManager.Register<MockServiceLocatorPrefab>(serviceLocatorPrefab);
+            var resolvedObject = serviceLocatorManager.Resolve<MockServiceLocatorPrefab>();
+
+            Assert.IsTrue(resolvedObject.AlreadyAssignedInPrefab == component.AlreadyAssignedInPrefab);
+        }
+        
+        [Test]
+        public void UseAlreadySetupPrefabsWithParents()
+        {
+            var serviceLocatorPrefab = new ServiceLocatorPrefab();
+            
+            var testPrefab = new GameObject("TestGameObject");
+            var testPrefabParent = new GameObject("TestGameObjectParent");
+            
+            var alreadyAssignedInPrefab = new GameObject("GameObjectAssigned to Prefab in Editor");
+            var component = testPrefab.AddComponent<MockServiceLocatorPrefab>();
+            component.AlreadyAssignedInPrefab = alreadyAssignedInPrefab;
+
+            serviceLocatorPrefab.ObjectToInstantiate = testPrefab;
+            serviceLocatorPrefab.Parent = testPrefabParent.transform;
+            
+            serviceLocatorManager.Register<MockServiceLocatorPrefab>(serviceLocatorPrefab);
+            var resolvedObject = serviceLocatorManager.Resolve<MockServiceLocatorPrefab>();
+
+            Assert.IsTrue(resolvedObject.transform.parent ==  serviceLocatorPrefab.Parent );
+        }
 
         [Test]
         public void CreateMonoServiceResetItAndResolveIt()
