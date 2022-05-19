@@ -40,14 +40,14 @@ namespace Packages.ServiceLocator
             Logger?.Log(ServiceLocatorManagerLogArgs.Registered(this, typeof(T), serviceInstance));
         }
         
-        public void Register<T>(ServiceLocatorAlreadySetupGameobjects serviceInstance,bool destroyOnLoad = true)
+        public void Register<T>(ServiceLocatorPrefab serviceInstance,bool destroyOnLoad = true)
         {
             if (serviceInstance == null || serviceInstance.ObjectToInstantiate == null) 
             {
                 return;
             }
 
-            Transform parent = serviceInstance.Parent ? serviceInstance.Parent : null;
+            Transform parent = serviceInstance.Parent;
             
             GameObject objectToInstantiate = Object.Instantiate(serviceInstance.ObjectToInstantiate, parent);
             
