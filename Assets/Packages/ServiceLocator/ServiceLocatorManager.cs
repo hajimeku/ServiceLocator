@@ -39,6 +39,29 @@ namespace Packages.ServiceLocator
             
             Logger?.Log(ServiceLocatorManagerLogArgs.Registered(this, typeof(T), serviceInstance));
         }
+        
+        public void Register<T>(ServiceLocatorPrefab serviceInstance,bool destroyOnLoad = true)
+        {
+            if (serviceInstance == null || serviceInstance.ObjectToInstantiate == null) 
+            {
+                return;
+            }
+
+            Transform parent = serviceInstance.Parent;
+            
+            GameObject objectToInstantiate = Object.Instantiate(serviceInstance.ObjectToInstantiate, parent);
+            
+            var mainService = objectToInstantiate.GetComponent<T>();
+            
+            if (!destroyOnLoad)
+            {
+                Object.DontDestroyOnLoad(objectToInstantiate);
+            }
+            
+            services[typeof(T)] = mainService;
+            
+            Logger?.Log(ServiceLocatorManagerLogArgs.Registered(this, typeof(T), mainService));
+        }
 
         public T Resolve<T>()
         {
